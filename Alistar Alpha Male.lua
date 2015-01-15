@@ -61,24 +61,22 @@ function OnLoad()
 	
 	
 		Config = scriptConfig("Alistar Alpha Male "..version, "Alistar Alpha Male "..version)
-		Config:addSubMenu("Orbwalking", "Orbwalking")
-		SxOrb:LoadToMenu(Config.Orbwalking)
-		Config:addSubMenu("[Alistar Alpha Male]: Combo Settings", "combocfg")
-		Config.combocfg:addParam("autoQW", "AutoWQ while combo pressing", SCRIPT_PARAM_ONOFF, true)
-		Config.combocfg:addParam("combokey", "Combokey(space=32)", SCRIPT_PARAM_ONKEYDOWN, false, string.byte(32))
-		Config.combocfg:addParam("autoWkey", "AutoWkey in range near mouse(C=67)", SCRIPT_PARAM_ONKEYDOWN, false, string.byte(67))
-		Config.combocfg:addParam("autoQkey", "AutoQkey in range near mouse(X=88)", SCRIPT_PARAM_ONKEYDOWN, false, string.byte(88))
-		Config.combocfg:permaShow("combokey")
-		Config.combocfg:permaShow("autoWkey")
-		Config.combocfg:permaShow("autoQkey")
+		Config:addParam("autoQW", "AutoWQ while combo pressing", SCRIPT_PARAM_ONOFF, true)
+		Config:addParam("combokey", "Combokey(32)", SCRIPT_PARAM_ONKEYDOWN, false, string.byte(32))
+		Config:addParam("autoWkey", "AutoWkey in range near mouse(67)", SCRIPT_PARAM_ONKEYDOWN, false, string.byte(67))
+		Config:addParam("autoQkey", "AutoQkey in range near mouse(88)", SCRIPT_PARAM_ONKEYDOWN, false, string.byte(88))
+		Config:permaShow("combokey")
+		Config:permaShow("autoWkey")
+		Config:permaShow("autoQkey")
+		Config:addParam("uaa", "Use AA in Combo", SCRIPT_PARAM_ONOFF, true)
 		
 		Config:addParam("drange", "Draw circle", SCRIPT_PARAM_ONOFF, true)
 		
 		ts = TargetSelector(TARGET_NEAR_MOUSE, wRange, DAMAGE_MAGIC, true)
-		ts.name = "Alistar"
 		Config:addTS(ts)
 
-
+		Config:addSubMenu("Orbwalking", "Orbwalking")
+		SxOrb:LoadToMenu(Config.Orbwalking)
 		
 end
 
@@ -116,7 +114,7 @@ local x2, y2, OnScreen2 = get2DFrom3DAM(ts.target.x, ts.target.y, ts.target.z)
 DrawLine(x1, y1, x2, y2, 3, 0xFF00FF00)
 DrawCircle(ts.target.x, ts.target.y, ts.target.z, 100, 0x00FF00)
 end
-if (Config.combocfg.autoWkey) then
+if (Config.autoWkey) then
 	if (ts.target ~= nil) then
 		if (myHero:CanUseSpell(_W) == READY) then
 			CastSpell(_W, ts.target)
@@ -124,7 +122,7 @@ if (Config.combocfg.autoWkey) then
 		end
 	end
 end
-if (Config.combocfg.autoQkey) then
+if (Config.autoQkey) then
 	if (ts.target ~= nil) then
 		if (myHero:CanUseSpell(_Q) == READY) then
 			if (GetDistance(ts.target) <= qRange) then
@@ -134,7 +132,7 @@ if (Config.combocfg.autoQkey) then
 		end
 	end
 end
-if (Config.combocfg.combokey) then
+if (Config.combokey) then
 	caa()
 	if(Config.autoQW) then
 		if (ts.target ~= nil) then
@@ -153,9 +151,9 @@ end
 end
 
 function caa()
-	if Config.combocfg.uaa then
+	if Config.uaa then
 		SxOrb:EnableAttacks()
-	elseif not Config.combocfg.uaa then
+	elseif not Config.uaa then
 		SxOrb:DisableAttacks()
 	end
 end
