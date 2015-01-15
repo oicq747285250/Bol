@@ -72,8 +72,7 @@ function OnLoad()
 		Config.combocfg:permaShow("autoWkey")
 		Config.combocfg:permaShow("autoQkey")
 		
-		Config:addSubMenu("[Alistar Alpha Male]: Draw Settings", "drawcfg")
-		Config.drawcfg:addParam("drange", "Draw circle", SCRIPT_PARAM_ONOFF, true)
+		Config:addParam("drange", "Draw circle", SCRIPT_PARAM_ONOFF, true)
 		
 		ts = TargetSelector(TARGET_NEAR_MOUSE, wRange, DAMAGE_MAGIC, true)
 		ts.name = "Alistar"
@@ -92,7 +91,7 @@ end
 
 
 function OnDraw()
-	if(Config.drawcfg.drange) then
+	if(Config.drange) then
 		DrawCircle(myHero.x, myHero.y, myHero.z, wRange, 0x33CC33)
 		DrawCircle(myHero.x, myHero.y, myHero.z, qRange, 0x33CC33)
 	end
