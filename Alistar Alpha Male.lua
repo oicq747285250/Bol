@@ -34,7 +34,7 @@ if _G.AUTOUPDATE then
 	end
 end
 local REQUIRED_LIBS = {
-	["SxOrbWalk"] = "https://raw.githubusercontent.com/Superx321/BoL/master/common/SxOrbWalk.lua",
+	
 }
 local DOWNLOADING_LIBS, DOWNLOAD_COUNT = false, 0
 function AfterDownload()
@@ -57,26 +57,30 @@ local qRange = 365 -- Range Q
 local wRange = 650 -- Range W
 
 function OnLoad()
-	PrintChat("<font color=\"#00ff00\">Alistar Alpha Male by oicq747285250</font>")
+		lastAttack = 0
+		lastAttackCD = 0
+		lastWindUpTime = 0
+		PrintChat("<font color=\"#00ff00\">Alistar Alpha Male by oicq747285250</font>")
 	
-	
+		
 		Config = scriptConfig("Alistar Alpha Male "..version, "Alistar Alpha Male "..version)
-		Config:addParam("autoQW", "AutoWQ while combo pressing", SCRIPT_PARAM_ONOFF, true)
-		Config:addParam("combokey", "Combokey(32)", SCRIPT_PARAM_ONKEYDOWN, false, string.byte(32))
-		Config:addParam("autoWkey", "AutoWkey in range near mouse(67)", SCRIPT_PARAM_ONKEYDOWN, false, string.byte(67))
-		Config:addParam("autoQkey", "AutoQkey in range near mouse(88)", SCRIPT_PARAM_ONKEYDOWN, false, string.byte(88))
-		Config:permaShow("combokey")
-		Config:permaShow("autoWkey")
-		Config:permaShow("autoQkey")
-		Config:addParam("uaa", "Use AA in Combo", SCRIPT_PARAM_ONOFF, true)
+		Config:addSubMenu("[Alistar Alpha Male]: Combo Settings", "combocfg")
+		Config.combocfg:addParam("autoQW", "AutoWQ while combo pressing", SCRIPT_PARAM_ONOFF, true)
+		Config.combocfg:addParam("combokey", "Combokey(32-SPACE)", SCRIPT_PARAM_ONKEYDOWN, false, string.byte(32))
+		Config.combocfg:addParam("autoQkey", "AutoQkey in range(88-X)", SCRIPT_PARAM_ONKEYDOWN, false, string.byte(88))
+		Config.combocfg:addParam("autoWkey", "AutoWkey in range(67-C)", SCRIPT_PARAM_ONKEYDOWN, false, string.byte(67))
+		Config.combocfg:permaShow("combokey")
+		Config.combocfg:permaShow("autoWkey")
+		Config.combocfg:permaShow("autoQkey")
+		Config.combocfg:addParam("uaa", "Use AA in Combo", SCRIPT_PARAM_ONOFF, true)
 		
 		Config:addParam("drange", "Draw circle", SCRIPT_PARAM_ONOFF, true)
 		
 		ts = TargetSelector(TARGET_NEAR_MOUSE, wRange, DAMAGE_MAGIC, true)
+		ts.name="Alistar"
 		Config:addTS(ts)
 
-		Config:addSubMenu("Orbwalking", "Orbwalking")
-		SxOrb:LoadToMenu(Config.Orbwalking)
+		
 		
 end
 
@@ -103,18 +107,14 @@ function get2DFrom3DAM(x, y, z)
 end
 
 function test()
-	
 if (ts.target ~= nil) then
-	if sac or mma then
-		SxOrb.SxOrbMenu.General.Enabled = false
-	end
-	SxOrb:ForceTarget(ts.target)
 local x1, y1, OnScreen1 = get2DFrom3DAM(myHero.x, myHero.y, myHero.z)
 local x2, y2, OnScreen2 = get2DFrom3DAM(ts.target.x, ts.target.y, ts.target.z)
 DrawLine(x1, y1, x2, y2, 3, 0xFF00FF00)
 DrawCircle(ts.target.x, ts.target.y, ts.target.z, 100, 0x00FF00)
 end
-if (Config.autoWkey) then
+if (Config.combocfg.autoWkey) then
+	if (ts.target ~= nil) then OrbWalking(ts.target) else MoveToMouse() end
 	if (ts.target ~= nil) then
 		if (myHero:CanUseSpell(_W) == READY) then
 			CastSpell(_W, ts.target)
@@ -122,7 +122,8 @@ if (Config.autoWkey) then
 		end
 	end
 end
-if (Config.autoQkey) then
+if (Config.combocfg.autoQkey) then
+	if (ts.target ~= nil) then OrbWalking(ts.target) else MoveToMouse() end
 	if (ts.target ~= nil) then
 		if (myHero:CanUseSpell(_Q) == READY) then
 			if (GetDistance(ts.target) <= qRange) then
@@ -132,9 +133,9 @@ if (Config.autoQkey) then
 		end
 	end
 end
-if (Config.combokey) then
-	caa()
-	if(Config.autoQW) then
+if (Config.combocfg.combokey) then
+	if (ts.target ~= nil) then OrbWalking(ts.target) else MoveToMouse() end
+	if(Config.combocfg.autoQW) then
 		if (ts.target ~= nil) then
 			if (myHero:CanUseSpell(_W and _Q) == READY) then
 				
@@ -150,10 +151,38 @@ if (Config.combokey) then
 end
 end
 
-function caa()
-	if Config.uaa then
-		SxOrb:EnableAttacks()
-	elseif not Config.uaa then
-		SxOrb:DisableAttacks()
-	end
+function TimeToAttack()
+    return (GetTickCount() + GetLatency()/2 > lastAttack + lastAttackCD)
+end
+function OrbWalking(Target)
+	if TimeToAttack() and GetDistance(Target) <= myHero.range + GetDistance(myHero.minBBox) then
+		myHero:Attack(Target)
+    elseif heroCanMove() then
+        moveToCursor()
+    end
+end
+function heroCanMove()
+	return (GetTickCount() + GetLatency()/2 > lastAttack + lastWindUpTime + 20)
+end
+
+function moveToCursor()
+	if GetDistance(mousePos) then
+		local moveToPos = myHero + (Vector(mousePos) - myHero):normalized()*300
+		myHero:MoveTo(moveToPos.x, moveToPos.z)
+    end        
+end
+function MoveToMouse()
+	local MousePos = Vector(mousePos.x, mousePos.y, mousePos.z)
+	local Position = myHero + (Vector(MousePos) - myHero):normalized()*300
+	myHero:MoveTo(Position.x, Position.z)
+end
+
+function OnProcessSpell(object,spell)
+	if object == myHero then
+		if spell.name:lower():find("attack") then
+			lastAttack = GetTickCount() - GetLatency()/2
+			lastWindUpTime = spell.windUpTime*1000
+			lastAttackCD = spell.animationTime*1000
+        end
+    end
 end
