@@ -118,7 +118,7 @@ if (Config.combocfg.autoQkey) then
 	if (ts.target ~= nil) then
 		if (myHero:CanUseSpell(_Q) == READY) then
 			if (GetDistance(ts.target) <= qRange) then
-				CastSpell(_Q)
+				CastSpell(_Q, ts.target)
 			end
 		
 		end
