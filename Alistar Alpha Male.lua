@@ -10,7 +10,7 @@ _G.AUTOUPDATE = true
 _G.USESKINHACK = false
 
 
-local version = "1.1"
+local version = "1.2"
 local UPDATE_HOST = "raw.github.com"
 local UPDATE_PATH = "/oicq747285250/Bol/master/Alistar%20Alpha%20Male.lua".."?rand="..math.random(1,10000)
 local UPDATE_FILE_PATH = SCRIPT_PATH..GetCurrentEnv().FILE_NAME
