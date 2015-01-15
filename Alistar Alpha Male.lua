@@ -12,12 +12,12 @@ _G.USESKINHACK = false
 
 local version = "1.2"
 local UPDATE_HOST = "raw.github.com"
-local UPDATE_PATH = "/oicq747285250/Bol/master/Alistar%20Alpha%20Male.lua".."?rand="..math.random(1,10000)
+local UPDATE_PATH = "/oicq747285250/Bol/master/Alistar Alpha Male.lua".."?rand="..math.random(1,10000)
 local UPDATE_FILE_PATH = SCRIPT_PATH..GetCurrentEnv().FILE_NAME
 local UPDATE_URL = "https://"..UPDATE_HOST..UPDATE_PATH
-function AutoupdaterMsg(msg) print("<font color=\"#FF0000\"><b>Alistar%20Alpha%20Male:</b></font> <font color=\"#FFFFFF\">"..msg..".</font>") end
+function AutoupdaterMsg(msg) print("<font color=\"#FF0000\"><b>Alistar Alpha Male:</b></font> <font color=\"#FFFFFF\">"..msg..".</font>") end
 if _G.AUTOUPDATE then
-	local ServerData = GetWebResult(UPDATE_HOST, "/oicq747285250/Bol/master/Alistar%20Alpha%20Male.version")
+	local ServerData = GetWebResult(UPDATE_HOST, "/oicq747285250/Bol/master/Alistar Alpha Male.version")
 	if ServerData then
 		ServerVersion = type(tonumber(ServerData)) == "number" and tonumber(ServerData) or nil
 		if ServerVersion then
