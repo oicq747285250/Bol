@@ -1,7 +1,8 @@
 --[[
 
 Alistar Alpha Male by oicq747285250
-v1 2015/1/13
+Last Update:v 1.2
+2015/1/15
 
 ]]--
 
@@ -94,8 +95,16 @@ end
 
 function OnDraw()
 	if(Config.drange) then
+		if ts.target~=nil and (GetDistance(ts.target) <= wRange) then
+		DrawCircle(myHero.x, myHero.y, myHero.z, wRange, 0xFF0000)
+		else
 		DrawCircle(myHero.x, myHero.y, myHero.z, wRange, 0x33CC33)
+		end
+		if ts.target~=nil and (GetDistance(ts.target) <= qRange) then
+		DrawCircle(myHero.x, myHero.y, myHero.z, qRange, 0xFF0000)
+		else
 		DrawCircle(myHero.x, myHero.y, myHero.z, qRange, 0x33CC33)
+		end
 	end
 	test()
 	
